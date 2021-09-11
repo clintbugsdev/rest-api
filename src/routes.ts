@@ -1,7 +1,11 @@
 import { Express, Request, Response } from "express";
 import { createUserHandler } from "./controller/user.controller";
-import { createUserSessionHandler } from "./controller/session.controller";
-import validateRequest from "./middleware/validateRequest";
+import {
+  createUserSessionHandler,
+  invalidateUserSessionHandler,
+  getUserSessionsHandler,
+} from "./controller/session.controller";
+import { validateRequest, requiresUser } from "./middleware";
 import {
   createUserSchema,
   createUserSessionSchema,
@@ -12,6 +16,7 @@ export default function (app: Express) {
 
   // Register User
   app.post("/api/users", validateRequest(createUserSchema), createUserHandler);
+
   // Login
   app.post(
     "/api/sessions",
@@ -20,7 +25,8 @@ export default function (app: Express) {
   );
 
   // Get the User's Sessions
+  app.get("/api/sessions", requiresUser, getUserSessionsHandler);
 
   // Logout
-  return res.send({ accessToken, refreshToken });
+  app.delete("/api/sessions", requiresUser, invalidateUserSessionHandler);
 }

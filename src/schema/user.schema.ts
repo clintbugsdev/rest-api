@@ -16,3 +16,12 @@ export const createUserSchema = object({
       .required("Email is required"),
   }),
 });
+
+export const createUserSessionSchema = object({
+  body: object({
+    password: string().required("Password is required"),
+    email: string()
+      .email("Must be a valid email")
+      .required("Email is required"),
+  }),
+});
